@@ -66,6 +66,10 @@
 #include "ebitmap.h"
 #include "audit.h"
 
+#ifdef CONFIG_KSU_SUSFS
+extern bool susfs_is_current_ksu_domain(void);
+#endif // #ifdef CONFIG_KSU_SUSFS
+
 /* Policy capability names */
 const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
 	"network_peer_controls",
@@ -2276,7 +2280,16 @@ int security_load_policy(struct selinux_state *state, void *data, size_t len)
 	oldmapping = state->ss->map.mapping;
 	state->ss->map.mapping = newmap.mapping;
 	state->ss->map.size = newmap.size;
+#ifdef CONFIG_KSU_SUSFS
+	if (susfs_is_current_ksu_domain()) {
+		seqno = state->ss->latest_granting;
+		goto bypass_orig;
+	}
+#endif // #ifdef CONFIG_KSU_SUSFS
 	seqno = ++state->ss->latest_granting;
+#ifdef CONFIG_KSU_SUSFS
+bypass_orig:
+#endif // #ifdef CONFIG_KSU_SUSFS
 	write_unlock_irq(&state->ss->policy_rwlock);
 
 	/* Free the old policydb and SID table. */
@@ -2980,7 +2993,16 @@ int security_set_bools(struct selinux_state *state, int len, int *values)
 			goto out;
 	}
 
+#ifdef CONFIG_KSU_SUSFS
+	if (susfs_is_current_ksu_domain()) {
+		seqno = state->ss->latest_granting;
+		goto bypass_orig;
+	}
+#endif // #ifdef CONFIG_KSU_SUSFS
 	seqno = ++state->ss->latest_granting;
+#ifdef CONFIG_KSU_SUSFS
+bypass_orig:
+#endif // #ifdef CONFIG_KSU_SUSFS
 	rc = 0;
 out:
 	write_unlock_irq(&state->ss->policy_rwlock);
