@@ -279,7 +279,13 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= rouleur/
 endif
 
-ifneq (,$(filter $(TARGET_PRODUCT), venus star mars haydn odin vili))
+ifneq (,$(filter $(TARGET_PRODUCT), venus star mars haydn odin vili aospa_vili aospa_venus aospa_star aospa_mars aospa_haydn aospa_odin))
+	obj-y	+= cs35l41/
+endif
+ifeq ($(CONFIG_SND_SOC_CS35L41), m)
+	obj-y	+= cs35l41/
+endif
+ifeq ($(CONFIG_SND_SOC_CS35L41), y)
 	obj-y	+= cs35l41/
 endif
 
