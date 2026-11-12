@@ -1316,13 +1316,7 @@ define filechk_utsrelease.h
 endef
 
 define filechk_version.h
-	if [ $(SUBLEVEL) -gt 255 ]; then                                 \
-		echo \#define LINUX_VERSION_CODE $(shell                 \
-		expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + 255); \
-	else                                                             \
-		echo \#define LINUX_VERSION_CODE $(shell                 \
-		expr $(VERSION) \* 65536 + $(PATCHLEVEL) \* 256 + $(SUBLEVEL)); \
-	fi;                                                              \
+	echo \#define LINUX_VERSION_CODE $(shell expr 5 \* 65536 + 4 \* 256 + 255); \
 	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) +  \
 	((c) > 255 ? 255 : (c)))'
 endef
